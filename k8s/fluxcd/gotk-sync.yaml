@@ -1,0 +1,29 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: flux-system
+  namespace: flux-system
+spec:
+  interval: 1m
+  ref:
+    branch: main
+  url: https://github.com/your-org/enterprise-observability-repo
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: enterprise-observability
+  namespace: flux-system
+spec:
+  interval: 10m
+  path: ./k8s
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  targetNamespace: enterprise-observability
+  postBuild:
+    substitute:
+      CLUSTER_NAME: enterprise-observability
+      REGION: us-east-1

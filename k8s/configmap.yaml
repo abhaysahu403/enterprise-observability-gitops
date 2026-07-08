@@ -1,0 +1,30 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: enterprise-config
+  namespace: enterprise-observability
+data:
+  # Database Configuration
+  DB_HOST: "postgres-service"
+  DB_PORT: "5432"
+  DB_USER: "enterprise"
+  
+  # Redis Configuration
+  REDIS_HOST: "redis-service"
+  REDIS_PORT: "6379"
+  
+  # Service URLs for Gateway
+  AUTH_SERVICE_URL: "http://authentication-service:8081"
+  EMPLOYEE_SERVICE_URL: "http://employee-service:8082"
+  LEAVE_SERVICE_URL: "http://leave-service:8083"
+  PAYROLL_SERVICE_URL: "http://payroll-service:8084"
+  ASSET_SERVICE_URL: "http://asset-service:8085"
+  HELPDESK_SERVICE_URL: "http://helpdesk-service:8086"
+  NOTIFICATION_SERVICE_URL: "http://notification-service:8087"
+  
+  # JWT Configuration
+  JWT_SECRET: "ZW50ZXJwcmlzZS1vYnNlcnZhYmlsaXR5LWRlbW8tc3VwZXItc2VjcmV0LWtleS1jaGFuZ2UtbWU="
+  
+  # Timezone
+  TZ: "UTC"

@@ -1,0 +1,114 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+  namespace: enterprise-observability
+  labels:
+    app: gateway
+    tier: api-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway
+  template:
+    metadata:
+      labels:
+        app: gateway
+        tier: api-gateway
+      annotations:
+        dynatrace.com/instrument: "true"
+    spec:
+      containers:
+        - name: gateway
+          image: 039612843833.dkr.ecr.us-east-1.amazonaws.com/enterprise-observability/gateway:v1.0.0
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "k8s"
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: enterprise-config
+                  key: REDIS_HOST
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: enterprise-config
+                  key: REDIS_PORT
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: enterprise-secrets
+                  key: JWT_SECRET
+            - name: AUTH_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: enterprise-config
+                  key: AUTH_SERVICE_URL
+            - name: EMPLOYEE_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: enterprise-config
+                  key: EMPLOYEE_SERVICE_URL
+            - name: LEAVE_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: enterprise-config
+                  key: LEAVE_SERVICE_URL
+            - name: PAYROLL_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: enterprise-config
+                  key: PAYROLL_SERVICE_URL
+            - name: ASSET_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: enterprise-config
+                  key: ASSET_SERVICE_URL
+            - name: HELPDESK_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: enterprise-config
+                  key: HELPDESK_SERVICE_URL
+            - name: NOTIFICATION_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: enterprise-config
+                  key: NOTIFICATION_SERVICE_URL
+            - name: DYNATRACE_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: enterprise-secrets
+                  key: DYNATRACE_API_TOKEN
+            - name: DYNATRACE_TENANT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: enterprise-secrets
+                  key: DYNATRACE_TENANT_URL
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3

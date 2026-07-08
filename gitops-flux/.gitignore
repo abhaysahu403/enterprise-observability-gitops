@@ -1,0 +1,59 @@
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+terraform.tfvars
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Secrets
+*.key
+*.pem
+*.crt
+*.p12
+secrets/
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Kubernetes secrets (never commit!)
+*-secret.yaml
+*-sealed-secret.yaml
+
+# Personal tokens
+github-token.txt
+dynatrace-token.txt
+
+# Build artifacts
+target/
+build/
+dist/
+node_modules/
+*.class
+*.jar
+*.war
+
+# Keep these exceptions
+!.gitkeep

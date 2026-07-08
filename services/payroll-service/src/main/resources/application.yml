@@ -1,0 +1,61 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: payroll-service
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:payroll_db}
+    username: ${DB_USER:enterprise}
+    password: ${DB_PASSWORD:enterprise_pass}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:ZW50ZXJwcmlzZS1vYnNlcnZhYmlsaXR5LWRlbW8tc3VwZXItc2VjcmV0LWtleS1jaGFuZ2UtbWU=}
+  payroll:
+    monthly-cron: ${PAYROLL_CRON:0 0 2 1 * *}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,beans,mappings,env,configprops,scheduledtasks
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - requestId=%X{requestId} user=%X{user} - %msg%n"
+  level:
+    root: INFO
+    com.enterprise: DEBUG

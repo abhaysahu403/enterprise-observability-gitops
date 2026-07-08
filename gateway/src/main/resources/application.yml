@@ -1,0 +1,83 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: gateway
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+  cloud:
+    gateway:
+      httpclient:
+        connect-timeout: 5000
+        response-timeout: 10s
+      default-filters:
+        - name: RequestRateLimiter
+          args:
+            redis-rate-limiter.replenishRate: 20
+            redis-rate-limiter.burstCapacity: 40
+            redis-rate-limiter.requestedTokens: 1
+            key-resolver: "#{@rateLimitKeyResolver}"
+      routes:
+        - id: authentication-service
+          uri: ${AUTH_SERVICE_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/auth/**
+
+        - id: employee-service
+          uri: ${EMPLOYEE_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/api/employees/**
+
+        - id: leave-service
+          uri: ${LEAVE_SERVICE_URL:http://localhost:8083}
+          predicates:
+            - Path=/api/leaves/**
+
+        - id: payroll-service
+          uri: ${PAYROLL_SERVICE_URL:http://localhost:8084}
+          predicates:
+            - Path=/api/payroll/**
+
+        - id: asset-service
+          uri: ${ASSET_SERVICE_URL:http://localhost:8085}
+          predicates:
+            - Path=/api/assets/**
+
+        - id: helpdesk-service
+          uri: ${HELPDESK_SERVICE_URL:http://localhost:8086}
+          predicates:
+            - Path=/api/tickets/**
+
+        - id: notification-service
+          uri: ${NOTIFICATION_SERVICE_URL:http://localhost:8087}
+          predicates:
+            - Path=/api/notifications/**
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:ZW50ZXJwcmlzZS1vYnNlcnZhYmlsaXR5LWRlbW8tc3VwZXItc2VjcmV0LWtleS1jaGFuZ2UtbWU=}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,gateway
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.gateway: INFO
+    com.enterprise.gateway: DEBUG

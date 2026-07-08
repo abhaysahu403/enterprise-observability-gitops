@@ -1,0 +1,58 @@
+---
+apiVersion: dynatrace.com/v1beta6
+kind: DynaKube
+metadata:
+  name: dynatrace
+  namespace: dynatrace
+spec:
+  apiUrl: https://izh05589.live.dynatrace.com/api
+  tokens: enterprise-eks-cluster
+  networkZone: us-east-1
+  skipCertCheck: false
+  enableIstio: false
+  
+  # OneAgent CloudNativeFullStack mode for automatic injection
+  oneAgent:
+    hostGroup: enterprise-observability
+    cloudNativeFullStack:
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+          operator: Exists
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/control-plane
+          operator: Exists
+      priorityClassName: system-cluster-critical
+      oneAgentResources:
+        requests:
+          cpu: "100m"
+          memory: "128Mi"
+        limits:
+          cpu: "300m"
+          memory: "512Mi"
+      initResources:
+        requests:
+          cpu: "100m"
+          memory: "128Mi"
+        limits:
+          cpu: "500m"
+          memory: "512Mi"
+  
+  # ActiveGate for Kubernetes monitoring, metrics, events, and logs
+  activeGate:
+    replicas: 1
+    capabilities:
+      - routing
+      - kubernetes-monitoring
+      - metrics-ingest
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "256Mi"
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+    tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+        operator: Exists
