@@ -8,7 +8,7 @@ spec:
   interval: 1m
   ref:
     branch: main
-  url: https://github.com/your-org/enterprise-observability-repo
+  url: https://github.com/abhaysahu403/enterprise-observability-gitops
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
