@@ -6,10 +6,3 @@ metadata:
   labels:
     app.kubernetes.io/name: enterprise-observability
     app.kubernetes.io/managed-by: fluxcd
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: dynatrace
-  labels:
-    app.kubernetes.io/name: dynatrace
