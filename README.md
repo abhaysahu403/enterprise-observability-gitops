@@ -1222,6 +1222,120 @@ kubectl get pods -n enterprise-observability -o jsonpath='{range .items[*]}{.met
 
 ---
 
+## 📸 Screenshots & Demonstrations
+
+### Infrastructure & Deployment
+
+#### EKS Cluster & Nodes
+![EKS Cluster Nodes](docs/screenshots/01-eks-cluster-nodes.png)
+*AWS EKS cluster with 3 worker nodes running across multiple availability zones*
+
+#### All Pods Running
+![All Pods Running](docs/screenshots/02-all-pods-running.png)
+*Complete microservices platform with 11 services deployed and healthy*
+
+#### Kubernetes Services
+![All Services](docs/screenshots/03-all-services.png)
+*All services exposed with ClusterIP and LoadBalancer endpoints*
+
+#### Terraform Apply
+![Terraform Apply](docs/screenshots/17-terraform-apply.png)
+*Infrastructure provisioned via Terraform - VPC, EKS, Node Groups*
+
+#### AWS EKS Console
+![AWS EKS Console](docs/screenshots/18-aws-eks-console.png)
+*EKS cluster visible in AWS Console with node group details*
+
+#### ECR Repositories
+![ECR Repositories](docs/screenshots/19-ecr-repositories.png)
+*Private container images stored in Amazon ECR*
+
+#### Load Balancer
+![Load Balancer](docs/screenshots/20-load-balancer.png)
+*AWS Network Load Balancer routing traffic to services*
+
+### Application Frontend
+
+#### Enterprise Dashboard
+![Frontend UI](docs/screenshots/04-frontend-ui.png)
+*React-based Material-UI dashboard with employee management interface*
+
+### Dynatrace Observability
+
+#### Kubernetes Monitoring
+![Dynatrace Kubernetes](docs/screenshots/05-dynatrace-kubernetes.png)
+*Complete Kubernetes cluster monitoring with node, pod, and container metrics*
+
+#### Service Discovery & Mapping
+![Dynatrace Services](docs/screenshots/06-dynatrace-services.png)
+*Automatic service discovery showing all microservices and dependencies*
+
+#### Distributed Tracing
+![Dynatrace Traces](docs/screenshots/07-dynatrace-traces.png)
+*End-to-end distributed traces showing request flow across services*
+
+#### OpenTelemetry Spans
+![OpenTelemetry Spans](docs/screenshots/08-opentelemetry-spans.png)
+*Detailed span information with timing, tags, and context propagation*
+
+#### Custom Dashboard
+![Dynatrace Dashboard](docs/screenshots/13-dynatrace-dashboard.png)
+*Custom enterprise dashboard with business and technical KPIs*
+
+#### Monitoring Metrics
+![Monitoring Metrics](docs/screenshots/21-monitoring-metrics.png)
+*Real-time performance metrics: response time, throughput, error rate*
+
+#### Application Logs
+![Application Logs](docs/screenshots/22-application-logs.png)
+*Centralized log aggregation with correlation to traces*
+
+#### Resource Utilization
+![Resource Utilization](docs/screenshots/23-resource-utilization.png)
+*Pod and container resource usage: CPU, memory, network*
+
+### Davis AI & Problem Detection
+
+#### Problems Dashboard
+![Davis AI Problems](docs/screenshots/09-davis-ai-problems.png)
+*Davis AI automatically detecting ImagePullBackOff errors and high failure rates*
+
+#### Root Cause Analysis
+![Davis AI Root Cause](docs/screenshots/10-davis-ai-root-cause.png)
+*AI-powered root cause analysis showing affected services and deployment changes*
+
+#### Slack Notifications
+![Slack Alert](docs/screenshots/11-slack-alert.png)
+*Real-time problem notifications delivered to Slack via Dynatrace workflows*
+
+### Service Level Objectives
+
+#### SLO Tracking
+![Dynatrace SLO](docs/screenshots/12-dynatrace-slo.png)
+*Service Level Objective monitoring with error budget tracking*
+
+### FluxCD GitOps
+
+#### Flux Status
+![Flux GitOps](docs/screenshots/14-flux-gitops.png)
+*FluxCD managing continuous deployment from Git repository*
+
+#### GitOps Scaling
+![GitOps Scaling](docs/screenshots/15-gitops-scaling.png)
+*Automatic scaling via Git commit - replicas changed from 1 to 3*
+
+#### Self-Healing
+![Self-Healing](docs/screenshots/16-self-healing.png)
+*FluxCD detecting drift and automatically recreating deleted deployments*
+
+### Complete Architecture
+
+#### System Architecture
+![Complete Architecture](docs/screenshots/24-complete-architecture.png)
+*Full platform architecture showing all components and integrations*
+
+---
+
 ## 📚 Additional Resources
 
 - **Dynatrace Documentation**: https://www.dynatrace.com/support/help/
