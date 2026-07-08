@@ -8,7 +8,7 @@ metadata:
     app: gateway
     tier: api-gateway
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: gateway
