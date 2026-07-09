@@ -116,7 +116,7 @@ data:
       
       # Prometheus exporter for Grafana to scrape
       prometheus:
-        endpoint: "0.0.0.0:8888"
+        endpoint: "0.0.0.0:9090"
         namespace: enterprise
         const_labels:
           cluster: enterprise-eks-cluster
