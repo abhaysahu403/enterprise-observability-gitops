@@ -7,6 +7,9 @@ A production-grade, multi-service enterprise application demonstrating **complet
 ![Dynatrace](https://img.shields.io/badge/Dynatrace-OneAgent-purple)
 ![Kubernetes](https://img.shields.io/badge/Kubernetes-1.28+-blue)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.4-green)
+![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-blue)
+![GitOps](https://img.shields.io/badge/GitOps-FluxCD-purple)
+![Security](https://img.shields.io/badge/Security-Trivy%20%7C%20OWASP-red)
 
 ---
 
@@ -48,6 +51,23 @@ A production-grade, multi-service enterprise application demonstrating **complet
 - ✅ **Auto-Scaling** — Horizontal pod autoscaling
 
 ### 🔒 Production-Ready Features
+- ✅ **Health Checks** — Liveness and readiness probes for all services
+- ✅ **Graceful Shutdown** — Zero-downtime deployments
+- ✅ **Resource Management** — CPU and memory limits/requests
+- ✅ **Secrets Management** — Kubernetes secrets for sensitive data
+- ✅ **ConfigMaps** — Externalized configuration
+- ✅ **Rolling Updates** — Zero-downtime application updates
+- ✅ **Multi-Environment** — Separate dev, staging, prod configurations
+
+### 🚀 CI/CD & DevSecOps
+- ✅ **GitHub Actions** — Automated build, test, and deployment pipelines
+- ✅ **SonarQube Integration** — Code quality and security analysis
+- ✅ **OWASP Dependency Check** — Vulnerability scanning for dependencies
+- ✅ **Trivy Security Scanning** — Container image vulnerability detection
+- ✅ **Automated Testing** — Unit tests, integration tests, coverage reports
+- ✅ **GitOps with FluxCD** — Continuous deployment from Git
+- ✅ **Amazon ECR** — Automated container image publishing
+- ✅ **Security Reports** — SARIF format uploaded to GitHub Security tab
 - ✅ **Health Checks** — Liveness and readiness probes for all services
 - ✅ **Graceful Shutdown** — Zero-downtime deployments
 - ✅ **Resource Management** — CPU and memory limits/requests
