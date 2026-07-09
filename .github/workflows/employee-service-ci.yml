@@ -1,0 +1,83 @@
+name: Employee Service CI/CD
+
+on:
+  push:
+    branches: [main]
+    paths: ['employee-service/**', '.github/workflows/employee-service-ci.yml']
+  pull_request:
+    branches: [main]
+    paths: ['employee-service/**']
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: enterprise-observability/employee-service
+  SERVICE_NAME: employee-service
+
+jobs:
+  build-test-scan-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: {java-version: '17', distribution: 'temurin', cache: maven}
+      
+      - name: Build & Test
+        working-directory: ./employee-service
+        run: |
+          mvn clean package -DskipTests
+          mvn test
+      
+      - name: SonarQube Scan
+        working-directory: ./employee-service
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: mvn sonar:sonar -Dsonar.projectKey=employee-service -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_TOKEN || true
+      
+      - name: OWASP Dependency Check
+        working-directory: ./employee-service
+        run: mvn org.owasp:dependency-check-maven:check -DfailBuildOnCVSS=7 || true
+      
+      - name: Build Docker Image
+        working-directory: ./employee-service
+        run: docker build -t ${{ env.SERVICE_NAME }}:${{ github.sha }} .
+      
+      - name: Trivy Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.SERVICE_NAME }}:${{ github.sha }}
+          format: sarif
+          output: trivy-results.sarif
+          severity: CRITICAL,HIGH
+      
+      - uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with: {sarif_file: trivy-results.sarif}
+      
+      - uses: aws-actions/configure-aws-credentials@v4
+        if: github.ref == 'refs/heads/main'
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - uses: aws-actions/amazon-ecr-login@v2
+        if: github.ref == 'refs/heads/main'
+        id: login-ecr
+      
+      - name: Push to ECR & Update Manifest
+        if: github.ref == 'refs/heads/main'
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: v1.0.${{ github.run_number }}
+        run: |
+          docker tag ${{ env.SERVICE_NAME }}:${{ github.sha }} $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG
+          docker push $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG
+          docker tag ${{ env.SERVICE_NAME }}:${{ github.sha }} $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:latest
+          docker push $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:latest
+          sed -i "s|image:.*|image: $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG|g" k8s/employee-service/deployment.yaml
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add k8s/employee-service/deployment.yaml
+          git commit -m "Update employee-service to $IMAGE_TAG [skip ci]" || true
+          git push || true
