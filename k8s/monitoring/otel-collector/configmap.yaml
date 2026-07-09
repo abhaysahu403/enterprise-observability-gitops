@@ -150,7 +150,7 @@ data:
         bucket: metrics
         token: "enterprise-platform-influxdb-token-2024-super-secret"
         timeout: 10s
-        metrics_schema: "telegraf-prometheus-v2"
+        metrics_schema: "telegraf-prometheus-v1"
       
       # Prometheus exporter for Grafana to scrape
       prometheus:
