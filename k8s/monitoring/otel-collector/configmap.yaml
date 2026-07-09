@@ -22,49 +22,82 @@ data:
                 - "*"
       
       # Prometheus scraper for Spring Boot Actuator metrics
+      # Using static targets instead of Kubernetes SD for reliable scraping
       prometheus:
         config:
           scrape_configs:
-            - job_name: 'spring-boot-services'
+            - job_name: 'gateway'
               scrape_interval: 30s
-              kubernetes_sd_configs:
-                - role: pod
-                  namespaces:
-                    names:
-                      - enterprise-observability
-              relabel_configs:
-                # Only scrape pods with prometheus.io/scrape=true annotation
-                - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
-                  action: keep
-                  regex: true
-                # Use custom metrics path if specified
-                - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
-                  action: replace
-                  target_label: __metrics_path__
-                  regex: (.+)
-                  replacement: $1
-                # Use custom port if specified, otherwise use container port
-                - source_labels: [__meta_kubernetes_pod_ip, __meta_kubernetes_pod_annotation_prometheus_io_port]
-                  separator: ":"
-                  regex: (.+);(.+)
-                  target_label: __address__
-                  replacement: $1:$2
-                  target_label: __address__
-                # Add pod labels as metric labels
-                - action: labelmap
-                  regex: __meta_kubernetes_pod_label_(.+)
-                # Add namespace label
-                - source_labels: [__meta_kubernetes_namespace]
-                  action: replace
-                  target_label: kubernetes_namespace
-                # Add pod name label
-                - source_labels: [__meta_kubernetes_pod_name]
-                  action: replace
-                  target_label: kubernetes_pod_name
-                # Add service name label
-                - source_labels: [__meta_kubernetes_pod_label_app]
-                  action: replace
-                  target_label: service_name
+              metrics_path: '/actuator/prometheus'
+              static_configs:
+                - targets: ['gateway-service.enterprise-observability.svc.cluster.local:8080']
+                  labels:
+                    service_name: 'gateway'
+                    app: 'gateway'
+                    tier: 'api-gateway'
+            
+            - job_name: 'authentication-service'
+              scrape_interval: 30s
+              metrics_path: '/actuator/prometheus'
+              static_configs:
+                - targets: ['authentication-service.enterprise-observability.svc.cluster.local:8081']
+                  labels:
+                    service_name: 'authentication-service'
+                    app: 'authentication-service'
+            
+            - job_name: 'employee-service'
+              scrape_interval: 30s
+              metrics_path: '/actuator/prometheus'
+              static_configs:
+                - targets: ['employee-service.enterprise-observability.svc.cluster.local:8082']
+                  labels:
+                    service_name: 'employee-service'
+                    app: 'employee-service'
+            
+            - job_name: 'leave-service'
+              scrape_interval: 30s
+              metrics_path: '/actuator/prometheus'
+              static_configs:
+                - targets: ['leave-service.enterprise-observability.svc.cluster.local:8083']
+                  labels:
+                    service_name: 'leave-service'
+                    app: 'leave-service'
+            
+            - job_name: 'payroll-service'
+              scrape_interval: 30s
+              metrics_path: '/actuator/prometheus'
+              static_configs:
+                - targets: ['payroll-service.enterprise-observability.svc.cluster.local:8084']
+                  labels:
+                    service_name: 'payroll-service'
+                    app: 'payroll-service'
+            
+            - job_name: 'asset-service'
+              scrape_interval: 30s
+              metrics_path: '/actuator/prometheus'
+              static_configs:
+                - targets: ['asset-service.enterprise-observability.svc.cluster.local:8085']
+                  labels:
+                    service_name: 'asset-service'
+                    app: 'asset-service'
+            
+            - job_name: 'helpdesk-service'
+              scrape_interval: 30s
+              metrics_path: '/actuator/prometheus'
+              static_configs:
+                - targets: ['helpdesk-service.enterprise-observability.svc.cluster.local:8086']
+                  labels:
+                    service_name: 'helpdesk-service'
+                    app: 'helpdesk-service'
+            
+            - job_name: 'notification-service'
+              scrape_interval: 30s
+              metrics_path: '/actuator/prometheus'
+              static_configs:
+                - targets: ['notification-service.enterprise-observability.svc.cluster.local:8087']
+                  labels:
+                    service_name: 'notification-service'
+                    app: 'notification-service'
     
     processors:
       # Batch processor for performance
