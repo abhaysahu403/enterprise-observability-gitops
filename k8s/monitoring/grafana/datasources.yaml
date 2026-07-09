@@ -10,7 +10,7 @@ data:
       - name: InfluxDB
         type: influxdb
         access: proxy
-        url: http://influxdb.monitoring.svc.cluster.local:8086
+        url: http://influxdb-influxdb2.monitoring.svc.cluster.local:8086
         jsonData:
           version: Flux
           organization: enterprise-observability

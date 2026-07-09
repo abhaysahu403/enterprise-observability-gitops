@@ -111,7 +111,7 @@ data:
       
       # Export to InfluxDB for Grafana visualization
       influxdb:
-        endpoint: http://influxdb.monitoring.svc.cluster.local:8086
+        endpoint: http://influxdb-influxdb2.monitoring.svc.cluster.local:8086
         org: enterprise-observability
         bucket: metrics
         token: "enterprise-platform-influxdb-token-2024-super-secret"
