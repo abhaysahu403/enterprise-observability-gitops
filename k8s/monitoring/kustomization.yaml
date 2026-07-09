@@ -1,24 +1,25 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: monitoring
 resources:
   # Namespace
   - namespace.yaml
   
-  # InfluxDB
+  # Helm Repositories (must be in flux-system namespace)
   - influxdb/helmrepository.yaml
+  - grafana/helmrepository.yaml
+  
+  # InfluxDB (in monitoring namespace)
   - influxdb/pvc.yaml
   - influxdb/helmrelease.yaml
   
-  # Grafana
-  - grafana/helmrepository.yaml
+  # Grafana (in monitoring namespace)
   - grafana/pvc.yaml
   - grafana/datasources.yaml
   - grafana/helmrelease.yaml
   
-  # OpenTelemetry Collector
+  # OpenTelemetry Collector (in monitoring namespace)
   - otel-collector/configmap.yaml
   - otel-collector/deployment.yaml
   
-  # Dashboards
+  # Dashboards (in monitoring namespace)
   - dashboards/configmap.yaml
