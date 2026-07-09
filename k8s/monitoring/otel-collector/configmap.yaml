@@ -5,6 +5,10 @@ metadata:
   namespace: monitoring
 data:
   config.yaml: |
+    extensions:
+      health_check:
+        endpoint: 0.0.0.0:13133
+    
     receivers:
       # OTLP receiver for traces, metrics, logs from applications
       otlp:
@@ -131,6 +135,8 @@ data:
         sampling_thereafter: 200
     
     service:
+      extensions: [health_check]
+      
       pipelines:
         # ===== TRACES PIPELINE - InfluxDB only =====
         traces:
