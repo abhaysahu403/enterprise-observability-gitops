@@ -1,0 +1,67 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: influxdb
+  namespace: monitoring
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: influxdb2
+      version: 2.1.2
+      sourceRef:
+        kind: HelmRepository
+        name: influxdata
+        namespace: flux-system
+      interval: 1m
+  install:
+    createNamespace: false
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    image:
+      repository: influxdb
+      tag: 2.7-alpine
+    
+    persistence:
+      enabled: true
+      existingClaim: influxdb-data
+      storageClass: gp3
+      size: 20Gi
+    
+    resources:
+      requests:
+        cpu: 500m
+        memory: 1Gi
+      limits:
+        cpu: 2000m
+        memory: 4Gi
+    
+    adminUser:
+      organization: enterprise-observability
+      bucket: metrics
+      user: admin
+      retention_policy: "30d"
+      password: "InfluxDB@SecurePassword123"
+      token: "enterprise-platform-influxdb-token-2024-super-secret"
+    
+    service:
+      type: ClusterIP
+      port: 8086
+    
+    livenessProbe:
+      httpGet:
+        path: /health
+        port: 8086
+      initialDelaySeconds: 30
+      periodSeconds: 10
+    
+    readinessProbe:
+      httpGet:
+        path: /health
+        port: 8086
+      initialDelaySeconds: 15
+      periodSeconds: 5

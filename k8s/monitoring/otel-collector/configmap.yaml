@@ -1,0 +1,159 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otel-collector-config
+  namespace: monitoring
+data:
+  config.yaml: |
+    receivers:
+      # OTLP receiver for traces, metrics, logs from applications
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
+            cors:
+              allowed_origins:
+                - "*"
+      
+      # Prometheus scraper for Spring Boot Actuator metrics
+      prometheus:
+        config:
+          scrape_configs:
+            - job_name: 'spring-boot-services'
+              scrape_interval: 30s
+              kubernetes_sd_configs:
+                - role: pod
+                  namespaces:
+                    names:
+                      - enterprise-observability
+              relabel_configs:
+                # Only scrape pods with prometheus.io/scrape=true annotation
+                - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+                  action: keep
+                  regex: true
+                # Use custom metrics path if specified
+                - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+                  action: replace
+                  target_label: __metrics_path__
+                  regex: (.+)
+                  replacement: $1
+                # Use custom port if specified, otherwise use container port
+                - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+                  action: replace
+                  regex: ([^:]+)(?::\d+)?;(\d+)
+                  replacement: $1:$2
+                  target_label: __address__
+                # Add pod labels as metric labels
+                - action: labelmap
+                  regex: __meta_kubernetes_pod_label_(.+)
+                # Add namespace label
+                - source_labels: [__meta_kubernetes_namespace]
+                  action: replace
+                  target_label: kubernetes_namespace
+                # Add pod name label
+                - source_labels: [__meta_kubernetes_pod_name]
+                  action: replace
+                  target_label: kubernetes_pod_name
+                # Add service name label
+                - source_labels: [__meta_kubernetes_pod_label_app]
+                  action: replace
+                  target_label: service_name
+    
+    processors:
+      # Batch processor for performance
+      batch:
+        timeout: 10s
+        send_batch_size: 1024
+        send_batch_max_size: 2048
+      
+      # Memory limiter to prevent OOM
+      memory_limiter:
+        check_interval: 1s
+        limit_mib: 512
+        spike_limit_mib: 128
+      
+      # Add resource attributes
+      resource:
+        attributes:
+          - key: deployment.environment
+            value: "production"
+            action: upsert
+          - key: cluster.name
+            value: "enterprise-eks-cluster"
+            action: upsert
+          - key: platform
+            value: "kubernetes"
+            action: upsert
+      
+      # Add span attributes
+      attributes:
+        actions:
+          - key: http.method
+            action: upsert
+            from_attribute: http.method
+          - key: http.status_code
+            action: upsert
+            from_attribute: http.status_code
+          - key: http.url
+            action: upsert
+            from_attribute: http.url
+    
+    exporters:
+      # ===== SINGLE EXPORT TO INFLUXDB =====
+      # Note: Dynatrace OneAgent already collects telemetry separately
+      # No need to export from OTel Collector to Dynatrace
+      
+      # Export to InfluxDB for Grafana visualization
+      influxdb:
+        endpoint: http://influxdb.monitoring.svc.cluster.local:8086
+        org: enterprise-observability
+        bucket: metrics
+        token: "enterprise-platform-influxdb-token-2024-super-secret"
+        timeout: 10s
+        metrics_schema: "telegraf-prometheus-v2"
+      
+      # Prometheus exporter for Grafana to scrape
+      prometheus:
+        endpoint: "0.0.0.0:8888"
+        namespace: enterprise
+        const_labels:
+          cluster: enterprise-eks-cluster
+          environment: production
+        resource_to_telemetry_conversion:
+          enabled: true
+      
+      # Logging exporter for debugging
+      logging:
+        loglevel: info
+        sampling_initial: 5
+        sampling_thereafter: 200
+    
+    service:
+      pipelines:
+        # ===== TRACES PIPELINE - InfluxDB only =====
+        traces:
+          receivers: [otlp]
+          processors: [memory_limiter, batch, resource, attributes]
+          exporters: [influxdb, logging]
+        
+        # ===== METRICS PIPELINE - InfluxDB + Prometheus =====
+        metrics:
+          receivers: [otlp, prometheus]
+          processors: [memory_limiter, batch, resource]
+          exporters: [influxdb, prometheus]
+        
+        # ===== LOGS PIPELINE - InfluxDB only =====
+        logs:
+          receivers: [otlp]
+          processors: [memory_limiter, batch, resource]
+          exporters: [influxdb, logging]
+      
+      # Telemetry configuration
+      telemetry:
+        logs:
+          level: info
+        metrics:
+          level: detailed
+          address: 0.0.0.0:8888
