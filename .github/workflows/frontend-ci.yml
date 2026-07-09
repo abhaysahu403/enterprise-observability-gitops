@@ -12,11 +12,13 @@ jobs:
         run: npm ci && npm run build
       - working-directory: ./frontend
         run: npm test -- --run || true
-      - run: docker build -f frontend/Dockerfile -t ${{ env.SERVICE_NAME }}:${{ github.sha }} .
+      - working-directory: ./frontend
+        run: docker build -t ${{ env.SERVICE_NAME }}:${{ github.sha }} .
       - uses: aquasecurity/trivy-action@master
+        if: success()
         with: {image-ref: "${{ env.SERVICE_NAME }}:${{ github.sha }}", format: sarif, output: t.sarif}
       - uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        if: success()
         with: {sarif_file: t.sarif}
       - uses: aws-actions/configure-aws-credentials@v4
         if: github.ref == 'refs/heads/main'
