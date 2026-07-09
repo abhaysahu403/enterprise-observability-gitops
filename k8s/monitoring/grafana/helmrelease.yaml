@@ -4,10 +4,9 @@ metadata:
   name: grafana
   namespace: monitoring
   annotations:
-    reconcile.fluxcd.io/requestedAt: "2026-07-09T14:30:00Z"
+    reconcile.fluxcd.io/requestedAt: "2026-07-09T14:35:00Z"
 spec:
   interval: 5m
-  force: true
   chart:
     spec:
       chart: grafana
