@@ -38,8 +38,7 @@ jobs:
         run: mvn test || true
 
       - name: Build Docker Image
-        working-directory: ./gateway
-        run: docker build -t ${{ env.SERVICE_NAME }}:${{ github.sha }} .
+        run: docker build -f gateway/Dockerfile -t ${{ env.SERVICE_NAME }}:${{ github.sha }} .
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
