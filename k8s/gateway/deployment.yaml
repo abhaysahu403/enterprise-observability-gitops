@@ -19,6 +19,9 @@ spec:
         tier: api-gateway
       annotations:
         dynatrace.com/instrument: "true"
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/actuator/prometheus"
     spec:
       containers:
         - name: gateway

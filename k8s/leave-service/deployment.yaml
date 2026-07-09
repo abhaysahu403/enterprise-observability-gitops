@@ -17,6 +17,9 @@ spec:
         app: leave-service
       annotations:
         dynatrace.com/instrument: "true"
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8083"
+        prometheus.io/path: "/actuator/prometheus"
     spec:
       containers:
         - name: leave-service
