@@ -34,7 +34,7 @@ spec:
     persistence:
       enabled: true
       existingClaim: grafana-data
-      storageClassName: gp3
+      storageClassName: gp2
       size: 10Gi
       accessModes:
         - ReadWriteOnce
