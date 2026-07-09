@@ -9,7 +9,6 @@ resources:
   - grafana/helmrepository.yaml
   
   # InfluxDB (in monitoring namespace)
-  - influxdb/pvc.yaml
   - influxdb/helmrelease.yaml
   
   # Grafana (in monitoring namespace)

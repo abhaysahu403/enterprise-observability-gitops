@@ -28,7 +28,6 @@ spec:
     
     persistence:
       enabled: true
-      existingClaim: influxdb-data
       storageClass: gp2
       size: 20Gi
     
