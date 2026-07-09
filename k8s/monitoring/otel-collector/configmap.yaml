@@ -45,8 +45,9 @@ data:
                   replacement: $1
                 # Use custom port if specified, otherwise use container port
                 - source_labels: [__meta_kubernetes_pod_ip, __meta_kubernetes_pod_annotation_prometheus_io_port]
-                  action: replace
+                  separator: ":"
                   regex: (.+);(.+)
+                  target_label: __address__
                   replacement: $1:$2
                   target_label: __address__
                 # Add pod labels as metric labels
